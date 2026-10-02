@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة المكافآت والجوائز - دعم الألعاب</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+        }
+
+        /* نافذة الترحيب والتنبيه */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            padding: 30px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 0 30px rgba(139, 92, 246, 0.2);
+            text-align: center;
+            animation: modalPop 0.4s ease-out;
+        }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--accent-cyan);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .modal-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 25px;
+            text-align: right;
+        }
+
+        .games-list {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            text-align: right;
+        }
+
+        .games-list strong {
+            color: var(--accent-purple);
+        }
+
+        /* شريط الانتظار (Progress Bar) */
+        .progress-container {
+            width: 100%;
+            background: #0f172a;
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));
+            transition: width 1s linear;
+        }
+
+        .timer-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-purple), #6366f1);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #334155;
+            color: #64748b;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-primary:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+        }
+
+        /* الموقع الرئيسي (مخفي مؤقتاً لين تخلص المالد) */
+        .main-container {
+            max-width: 600px;
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .header-box {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-box h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header-box p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .action-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .counter-badge {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-purple);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .footer-note {
+            margin-top: 30px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- نافذة البداية والرسالة التحفيزية -->
+    <div class="modal-overlay" id="welcomeModal">
+        <div class="modal-card">
+            <div class="modal-title" id="welcomeTitle">منور/ه يا بطل! 👋</div>
+            <div class="modal-desc">
+                نحن فريق نحتاج دعمكم في موقعنا مقابل مشاهدة الإعلانات أو تحميل البرامج، ولذلك يوجد مقابل بأي عملة تطلبها على حسب النقاط اللي تجمعها. تفاوض معنا عن لعبتك وعن أسعار عملاتها لنعطيك مقابله.
+            </div>
+            
+            <div class="games-list">
+                <strong>ألعاب شائعة:</strong> روبلوكس، فورتنايت، ستور، وأي شي تحتاجه.<br>
+                <span style="font-size: 0.8rem; color: #94a3b8; display: block; margin-top: 5px;">* اعلم بأن على حسب سعر عملات لعبتك سيتم تصنيفه بطلب نقاط معينة.</span>
+            </div>
+
+            <div class="timer-text" id="timerText">يرجى الانتظار قليلاً للقراءة (15 ثانية)...</div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <button class="btn-primary" id="acceptBtn" disabled>انتظر قليلاً...</button>
+        </div>
+    </div>
+
+    <!-- واجهة الموقع الرئيسية -->
+    <div class="main-container" id="mainContainer">
+        <div class="header-box">
+            <h1>مركز عروض ودعم الألعاب</h1>
+            <p>أنجز المهام أو تصفح الإعلانات لدعم المنصة، اجمع نقاطك وتواصل معنا لتستبدلها بجوائزك فوراً!</p>
+        </div>
+
+        <div class="action-card">
+            <div class="counter-badge" id="taskCounter">المهام المنجزة: 0 / 10</div>
+            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
+                اضغط على الزر أدناه لفتح لوحة العروض (إعلانات وتحميل تطبيقات)، وكل عرض تخلصه صور الشاشة وكلمنا بالخاص!
+            </p>
+            <!-- هنا تحط رابط CPX Research الخاص فيك لاحقاً -->
+            <button class="btn-primary" onclick="openOfferWall()">🚀 ابدأ بجمع العروض الآن</button>
+        </div>
+
+        <div class="footer-note">
+            شكراً لدعمكم لنا ❤️ | جميع الحقوق محفوظة لـ فيصل
+        </div>
+    </div>
+
+    <script>
+        // إعدادات عداد الـ 15 ثانية للرسالة الترحيبية
+        let timeLeft = 15;
+        const progressBar = document.getElementById('progressBar');
+        const timerText = document.getElementById('timerText');
+        const acceptBtn = document.getElementById('acceptBtn');
+        const welcomeModal = document.getElementById('welcomeModal');
+        const mainContainer = document.getElementById('mainContainer');
+
+        const totalTime = 15;
+        const intervalTime = 1000; // كل ثانية
+
+        let timer = setInterval(function() {
+            timeLeft--;
+            let progressPercent = ((totalTime - timeLeft) / totalTime) * 100;
+            progressBar.style.width = progressPercent + '%';
+            
+            if (timeLeft > 0) {
+                timerText.textContent = `يرجى الانتظار قليلاً (${timeLeft} ثانية)...`;
+            } else {
+                clearInterval(timer);
+                timerText.textContent = "تم التحقق بنجاح!";
+                acceptBtn.disabled = false;
+                acceptBtn.textContent = "حسناً، فهمت ومستعد!";
+            }
+        }, intervalTime);
+
+        // عند الضغط على زر حسناً فهمت
+        acceptBtn.addEventListener('click', function() {
+            welcomeModal.style.opacity = '0';
+            welcomeModal.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                welcomeModal.style.display = 'none';
+                mainContainer.style.display = 'flex';
+            }, 500);
+        });
+
+        // دالة فتح لوحة العروض (حط رابطك هنا بدال الرابط التجريبي)
+        function openOfferWall() {
+            window.open('https://publisher.cpx-research.com/', '_blank');
+        }
+    </script>
+</body>
+</html>
