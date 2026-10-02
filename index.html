@@ -131,6 +131,22 @@
             transition: all 0.3s ease;
             width: 100%;
             box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+            margin-top: 10px;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--accent-cyan), #0284c7);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+            margin-top: 10px;
         }
 
         .btn-primary:disabled {
@@ -140,12 +156,12 @@
             box-shadow: none;
         }
 
-        .btn-primary:not(:disabled):hover {
+        .btn-primary:not(:disabled):hover, .btn-secondary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+            opacity: 0.9;
         }
 
-        /* الموقع الرئيسي (مخفي مؤقتاً لين تخلص المالد) */
+        /* الموقع الرئيسي */
         .main-container {
             max-width: 600px;
             width: 100%;
@@ -242,12 +258,16 @@
         </div>
 
         <div class="action-card">
-            <div class="counter-badge" id="taskCounter">المهام المنجزة: 0 / 10</div>
+            <div class="counter-badge" id="taskCounter">اختر المهمة وابدأ الآن</div>
             <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
-                اضغط على الزر أدناه لفتح لوحة العروض (إعلانات وتحميل تطبيقات)، وكل عرض تخلصه صور الشاشة وكلمنا بالخاص!
+                أتمم الاستطلاعات أو العروض، وكل مهمة تخلصها صور الشاشة وكلمنا بالخاص!
             </p>
-            <!-- هنا تحط رابط CPX Research الخاص فيك لاحقاً -->
-            <button class="btn-primary" onclick="openOfferWall()">🚀 ابدأ بجمع العروض الآن</button>
+            
+            <!-- زر الاستطلاعات (مربوط بمعرفك 36799) -->
+            <button class="btn-primary" onclick="openSurveys()">📋 استطلاع أسئلة (عليه نقاط ممتازة)</button>
+
+            <!-- زر الإعلانات أو تحميل التطبيقات (للشركة الثانية اللي بتضيفها لاحقاً) -->
+            <button class="btn-secondary" onclick="openAds()">🎮 إعلانات وتحميل تطبيقات (عروض إضافية)</button>
         </div>
 
         <div class="footer-note">
@@ -256,7 +276,6 @@
     </div>
 
     <script>
-        // إعدادات عداد الـ 15 ثانية للرسالة الترحيبية
         let timeLeft = 15;
         const progressBar = document.getElementById('progressBar');
         const timerText = document.getElementById('timerText');
@@ -265,7 +284,7 @@
         const mainContainer = document.getElementById('mainContainer');
 
         const totalTime = 15;
-        const intervalTime = 1000; // كل ثانية
+        const intervalTime = 1000;
 
         let timer = setInterval(function() {
             timeLeft--;
@@ -282,7 +301,6 @@
             }
         }, intervalTime);
 
-        // عند الضغط على زر حسناً فهمت
         acceptBtn.addEventListener('click', function() {
             welcomeModal.style.opacity = '0';
             welcomeModal.style.transition = 'opacity 0.5s ease';
@@ -292,9 +310,14 @@
             }, 500);
         });
 
-        // دالة فتح لوحة العروض (حط رابطك هنا بدال الرابط التجريبي)
-        function openOfferWall() {
-            window.open('https://publisher.cpx-research.com/', '_blank');
+        // رابط استطلاعات CPX Research مع معرفك الصحيح 36799
+        function openSurveys() {
+            window.open('https://offerwall.cpx-research.com/index.php?app_id=36799&ext_user_id=visitor_' + Math.floor(Math.random() * 100000), '_blank');
+        }
+
+        // رابط الشركة الثانية (للإعلانات والتطبيقات) - استبدله بالرابط الخاص بالشركة الثانية لاحقاً
+        function openAds() {
+            window.open('https://publisher.cpx-research.com/', '_blank'); 
         }
     </script>
 </body>
